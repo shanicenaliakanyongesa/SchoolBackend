@@ -64,6 +64,7 @@ export const updateProfile = async (req, res) => {
 // =======================
 export const createUser = async (req, res) => {
   try {
+      console.log("Incoming body:", req.body);
     const { name, email, password, role } = req.body;
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "name, email, password and role are required" });
