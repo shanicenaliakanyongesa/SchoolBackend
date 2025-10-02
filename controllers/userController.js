@@ -150,6 +150,11 @@ export const updateUser = async (req, res) => {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "user not found" });
 
+    // 🚨 Prevent updating admins
+    if (user.role === "admin") {
+      return res.status(403).json({ message: "Admin accounts cannot be updated" });
+    }
+
     if (email && email !== user.email) {
       const existing = await User.findOne({ email });
       if (existing) return res.status(409).json({ message: "email already in use" });
@@ -184,6 +189,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
+
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -191,6 +197,11 @@ export const deleteUser = async (req, res) => {
 
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "user not found" });
+
+    // 🚨 Prevent deleting admins
+    if (user.role === "admin") {
+      return res.status(403).json({ message: "Admin accounts cannot be deleted" });
+    }
 
     if (user.role === "teacher") {
       await Course.updateMany({ teacher: user._id }, { $unset: { teacher: "" } });
